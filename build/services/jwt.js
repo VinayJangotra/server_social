@@ -12,29 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initServer = initServer;
-const express_1 = __importDefault(require("express"));
-const server_1 = require("@apollo/server");
-const express4_1 = require("@apollo/server/express4");
-const body_parser_1 = __importDefault(require("body-parser"));
-const user_1 = require("./user");
-function initServer() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const app = (0, express_1.default)();
-        app.use(body_parser_1.default.json());
-        const graphqlServer = new server_1.ApolloServer({
-            typeDefs: `
-        ${user_1.User.types}
-        type Query{
-        ${user_1.User.queries}
-        }
-    `,
-            resolvers: {
-                Query: Object.assign({}, user_1.User.resolvers.queries),
-            },
+;
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const JWT_SECRET = "Hello_World";
+class JWTService {
+    static generateTokenUser(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const payload = {
+                id: user === null || user === void 0 ? void 0 : user.id,
+                email: user === null || user === void 0 ? void 0 : user.email,
+            };
+            const token = jsonwebtoken_1.default.sign(payload, JWT_SECRET);
+            return token;
         });
-        yield graphqlServer.start();
-        app.use((0, express4_1.expressMiddleware)(graphqlServer));
-        return app;
-    });
+    }
 }
+exports.default = JWTService;
